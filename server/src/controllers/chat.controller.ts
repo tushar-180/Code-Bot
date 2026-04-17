@@ -26,6 +26,7 @@ export const createChat = async (req: Request, res: Response) => {
       message?: string;
     };
 
+
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
@@ -93,13 +94,13 @@ export const sendMessage = async (req: Request, res: Response) => {
 export const getAllChats = async (req: Request, res: Response) => {
   try {
     const userId = req.query.userId as string | undefined;
-
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
-
+    
     const chats = await Chat.find({ userId }).sort({ updatedAt: -1 });
-
+    
+   
     return res.json(chats);
   } catch (error) {
     console.error("Error fetching chats", error);

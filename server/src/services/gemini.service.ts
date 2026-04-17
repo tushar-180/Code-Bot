@@ -29,6 +29,42 @@ const extractRetryAfterSeconds = (message: string) => {
 // ✅ Use latest fast model
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
+// export const generateResponse = async (messages: ChatMessage[]) => {
+//   if (!process.env.GEMINI_API_KEY) {
+//     throw new GeminiServiceError(
+//       "Gemini API key is missing on the server.",
+//       500
+//     );
+//   }
+
+//   // ✅ Convert chat history into plain text prompt
+//   const prompt = messages
+//     .map((msg) => `${msg.role === "assistant" ? "AI" : "User"}: ${msg.content}`)
+//     .join("\n");
+// // example : User: Hello, how are you?
+// // AI: I am fine, thank you.
+//   try {
+//     const res = await ai.models.generateContent({
+//       model: GEMINI_MODEL,
+//       contents: prompt, // ✅ simple string works
+//     });
+
+//     return res.text?.trim() || "I couldn't generate a response right now.";
+//   } catch (error: any) {
+//     const status = error?.status || 500;
+//     const rawMessage = error?.message || "Gemini request failed";
+
+//     if (status === 429) {
+//       throw new GeminiServiceError(
+//         "Gemini quota exceeded. Please wait and try again.",
+//         429,
+//         extractRetryAfterSeconds(rawMessage)
+//       );
+//     }
+
+//     throw new GeminiServiceError(rawMessage, status);
+//   }
+// };
 export const generateResponse = async (messages: ChatMessage[]) => {
   if (!process.env.GEMINI_API_KEY) {
     throw new GeminiServiceError(
@@ -37,18 +73,41 @@ export const generateResponse = async (messages: ChatMessage[]) => {
     );
   }
 
-  // ✅ Convert chat history into plain text prompt
-  const prompt = messages
-    .map((msg) => `${msg.role === "assistant" ? "AI" : "User"}: ${msg.content}`)
-    .join("\n");
+  // ✅ Proper structured messages + system instruction
+  const contents = [
+    {
+      role: "user",
+      parts: [
+        {
+          text: `
+You are a helpful AI assistant.
+
+- Format responses using Markdown
+- Use headings, bullet points, and code blocks when needed
+- Keep answers clean and readable
+`,
+        },
+      ],
+    },
+    ...messages.map((msg) => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.content }],
+    })),
+  ];
 
   try {
     const res = await ai.models.generateContent({
       model: GEMINI_MODEL,
-      contents: prompt, // ✅ simple string works
+      contents,
     });
 
-    return res.text?.trim() || "I couldn't generate a response right now.";
+    // ✅ safer extraction
+    const text =
+      res?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      res?.text ||
+      "";
+
+    return text.trim() || "I couldn't generate a response right now.";
   } catch (error: any) {
     const status = error?.status || 500;
     const rawMessage = error?.message || "Gemini request failed";

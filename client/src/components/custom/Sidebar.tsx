@@ -3,7 +3,14 @@ import { useChatStore } from "@/store/useChatStore";
 import { api } from "@/lib/api";
 import { useUser } from "@clerk/react";
 import { toast } from "sonner";
-import { Plus, MessageSquare, LayoutDashboard, Sparkles, X, Trash2 } from "lucide-react";
+import {
+  Plus,
+  MessageSquare,
+  LayoutDashboard,
+  Sparkles,
+  X,
+  Trash2,
+} from "lucide-react";
 
 const Sidebar = () => {
   const {
@@ -18,6 +25,7 @@ const Sidebar = () => {
     setSidebarOpen,
     removeChat,
   } = useChatStore();
+
   const { user } = useUser();
 
   const createChat = () => {
@@ -29,7 +37,7 @@ const Sidebar = () => {
 
   const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation(); // Prevent chat selection
-    
+
     if (!window.confirm("Are you sure you want to delete this chat?")) return;
 
     try {
@@ -42,7 +50,6 @@ const Sidebar = () => {
     }
   };
 
-  
   useEffect(() => {
     if (!user?.id) return;
 
@@ -78,16 +85,18 @@ const Sidebar = () => {
     <>
       {/* Backdrop for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden animate-in fade-in duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      <aside className={`
+      <aside
+        className={`
         fixed inset-y-0 left-0 z-50 flex h-full w-full flex-col gap-6 border-slate-800/60 bg-slate-950 p-6 transition-transform duration-300 ease-in-out md:relative md:w-80 md:translate-x-0 md:border-r md:max-h-screen md:overflow-y-auto
         ${sidebarOpen ? "translate-x-0 transform" : "-translate-x-full md:translate-x-0"}
-      `}>
+      `}
+      >
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-tr from-indigo-600 to-sky-500 text-white shadow-lg shadow-indigo-500/20">
@@ -189,7 +198,6 @@ const Sidebar = () => {
       </aside>
     </>
   );
-
 };
 
 export default Sidebar;

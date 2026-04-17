@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type Message = {
   role: "user" | "assistant";
@@ -29,38 +30,85 @@ type ChatState = {
   clearMessages: () => void;
 };
 
-export const useChatStore = create<ChatState>((set) => ({
-  chats: [],
-  currentChatId: null,
-  messages: [],
-  loading: false,
-  isNewChat: false,
-  sidebarOpen: false,
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set) => ({
+      chats: [],
+      currentChatId: null,
+      messages: [],
+      loading: false,
+      isNewChat: false,
+      sidebarOpen: false,
 
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
-  setChats: (chats) => set({ chats }),
+      setChats: (chats) => set({ chats }),
 
-  setCurrentChat: (id) =>
-    set((state) => ({ currentChatId: id, isNewChat: id ? false : state.isNewChat })),
+      setCurrentChat: (id) =>
+        set((state) => ({
+          currentChatId: id,
+          isNewChat: id ? false : state.isNewChat,
+        })),
 
-  setMessages: (messages) => set({ messages }),
+      setMessages: (messages) => set({ messages }),
 
-  addMessage: (message) =>
-    set((state) => ({
-      messages: [...state.messages, message],
-    })),
+      addMessage: (message) =>
+        set((state) => ({
+          messages: [...state.messages, message],
+        })),
 
-  setLoading: (loading) => set({ loading }),
+      setLoading: (loading) => set({ loading }),
 
-  setIsNewChat: (isNew) => set({ isNewChat: isNew }),
+      setIsNewChat: (isNew) => set({ isNewChat: isNew }),
 
-  removeChat: (id) =>
-    set((state) => ({
-      chats: state.chats.filter((chat) => chat._id !== id),
-      currentChatId: state.currentChatId === id ? null : state.currentChatId,
-      messages: state.currentChatId === id ? [] : state.messages,
-    })),
+      removeChat: (id) =>
+        set((state) => ({
+          chats: state.chats.filter((chat) => chat._id !== id),
+          currentChatId:
+            state.currentChatId === id ? null : state.currentChatId,
+          messages: state.currentChatId === id ? [] : state.messages,
+        })),
 
-  clearMessages: () => set({ messages: [] }),
-}));
+      clearMessages: () => set({ messages: [] }),
+    }),
+    {
+      name: "chat-storage",
+    },
+  ),
+);
+
+// export const useChatStore = create<ChatState>((set) => ({
+//   chats: [],
+//   currentChatId: null,
+//   messages: [],
+//   loading: false,
+//   isNewChat: false,
+//   sidebarOpen: false,
+
+//   setSidebarOpen: (open) => set({ sidebarOpen: open }),
+
+//   setChats: (chats) => set({ chats }),
+
+//   setCurrentChat: (id) =>
+//     set((state) => ({ currentChatId: id, isNewChat: id ? false : state.isNewChat })),
+
+//   setMessages: (messages) => set({ messages }),
+
+//   addMessage: (message) =>
+//     set((state) => ({
+//       messages: [...state.messages, message],
+//     })),
+
+//   setLoading: (loading) => set({ loading }),
+
+//   setIsNewChat: (isNew) => set({ isNewChat: isNew }),
+
+//   removeChat: (id) =>
+//     set((state) => ({
+//       chats: state.chats.filter((chat) => chat._id !== id),
+//       currentChatId: state.currentChatId === id ? null : state.currentChatId,
+//       messages: state.currentChatId === id ? [] : state.messages,
+//     })),
+
+//   clearMessages: () => set({ messages: [] }),
+// }));

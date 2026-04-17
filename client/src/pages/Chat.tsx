@@ -6,6 +6,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { api } from "@/lib/api";
 import Sidebar from "@/components/custom/Sidebar";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 import { Send, Bot, Sparkles, User, Loader2, Menu } from "lucide-react";
 
 const getChatErrorMessage = (error: unknown) => {
@@ -39,6 +40,7 @@ const Chat = () => {
     setMessages,
     setIsNewChat,
     addMessage,
+    setSidebarOpen,
     setLoading,
   } = useChatStore();
   const [input, setInput] = useState("");
@@ -62,11 +64,11 @@ const Chat = () => {
       try {
         const res = await api.get(`/chat/${currentChatId}`);
         setMessages(res.data.messages || []);
-    } catch (err) {
-      console.error("Error fetching messages", err);
-      toast.error("Could not load messages for this chat.");
-    }
-  };
+      } catch (err) {
+        console.error("Error fetching messages", err);
+        toast.error("Could not load messages for this chat.");
+      }
+    };
 
     fetchMessages();
   }, [currentChatId, setMessages]);
@@ -107,10 +109,8 @@ const Chat = () => {
       setMessages(res.data.messages || []);
       setChats(
         chats.map((chat) =>
-          chat._id === res.data._id
-            ? { ...chat, title: res.data.title }
-            : chat
-        )
+          chat._id === res.data._id ? { ...chat, title: res.data.title } : chat,
+        ),
       );
     } catch (err) {
       console.error("Error sending message", err);
@@ -132,7 +132,7 @@ const Chat = () => {
             <div className="flex items-center gap-3 w-full">
               {/* Hamburger Menu - Only on Mobile */}
               <button
-                onClick={() => useChatStore.getState().setSidebarOpen(true)}
+                onClick={() => setSidebarOpen(true)}
                 className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-slate-400 hover:text-white md:hidden"
               >
                 <Menu size={20} />
@@ -142,18 +142,19 @@ const Chat = () => {
                 <Sparkles size={20} />
               </div>
               <div className="flex items-center justify-between w-full">
-
-              <div>
-                <h1 className="text-lg font-bold tracking-tight text-white">
-                  {user?.firstName ? `Hello, ${user.firstName}` : "Welcome"}
-                </h1>
-                <p className="text-xs font-medium text-slate-400">
-                  {currentChatId ? "Continuing Conversation" : "Start a New Session"}
-                </p>
-              </div>
+                <div>
+                  <h1 className="text-lg font-bold tracking-tight text-white">
+                    {user?.firstName ? `Hello, ${user.firstName}` : "Welcome"}
+                  </h1>
+                  <p className="text-xs font-medium text-slate-400">
+                    {currentChatId
+                      ? "Continuing Conversation"
+                      : "Start a New Session"}
+                  </p>
+                </div>
 
                 <div className="">
-                  <UserButton/>
+                  <UserButton />
                 </div>
               </div>
             </div>
@@ -168,7 +169,9 @@ const Chat = () => {
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-900 border border-slate-800 text-indigo-400 shadow-2xl">
                   <Bot size={32} />
                 </div>
-                <h2 className="mb-2 text-2xl font-bold text-white">How can I help you today?</h2>
+                <h2 className="mb-2 text-2xl font-bold text-white">
+                  How can I help you today?
+                </h2>
                 <p className="max-w-md text-slate-400 leading-relaxed">
                   {isNewChat
                     ? "Your new conversation is ready. Send a message to get started."
@@ -187,12 +190,18 @@ const Chat = () => {
                     msg.role === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <div className={`flex max-w-[85%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div
+                    className={`flex max-w-[85%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+                  >
                     {/* Avatar */}
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl overflow-hidden border border-slate-700 shadow-sm">
                       {msg.role === "user" ? (
                         user?.imageUrl ? (
-                          <img src={user.imageUrl} alt="User" className="h-full w-full object-cover" />
+                          <img
+                            src={user.imageUrl}
+                            alt="User"
+                            className="h-full w-full object-cover"
+                          />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-slate-800 text-slate-400">
                             <User size={18} />
@@ -214,9 +223,11 @@ const Chat = () => {
                             : "bg-slate-900/80 text-slate-100 ring-slate-800/60"
                         }`}
                       >
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
-                      <span className={`text-[10px] uppercase tracking-widest text-slate-500 ${msg.role === "user" ? "text-right mr-1" : "text-left ml-1"}`}>
+                      <span
+                        className={`text-[10px] uppercase tracking-widest text-slate-500 ${msg.role === "user" ? "text-right mr-1" : "text-left ml-1"}`}
+                      >
                         {msg.role === "user" ? "You" : "Assistant"}
                       </span>
                     </div>
@@ -246,10 +257,7 @@ const Chat = () => {
 
         {/* Input Area */}
         <div className="border-t border-slate-800/60 bg-slate-950/50 p-4 md:p-6 backdrop-blur-xl">
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto max-w-4xl"
-          >
+          <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
             <div className="relative flex items-end gap-3 rounded-[1.75rem] border border-slate-700 bg-slate-900/80 p-2 shadow-2xl transition-all focus-within:border-indigo-500/50 focus-within:ring-4 focus-within:ring-indigo-500/10">
               <textarea
                 value={input}
@@ -258,7 +266,9 @@ const Chat = () => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     if (input.trim() && !loading) {
-                      const event = { preventDefault: () => {} } as FormEvent<HTMLFormElement>;
+                      const event = {
+                        preventDefault: () => {},
+                      } as FormEvent<HTMLFormElement>;
                       handleSubmit(event);
                     }
                   }
@@ -282,14 +292,14 @@ const Chat = () => {
               </button>
             </div>
             <p className="mt-2 text-center text-[10px] text-slate-500">
-              AI model may produce inaccurate info. Personalize your workflow with Chat Studio.
+              AI model may produce inaccurate info. Personalize your workflow
+              with Chat Studio.
             </p>
           </form>
         </div>
       </main>
     </div>
   );
-
 };
 
 export default Chat;
