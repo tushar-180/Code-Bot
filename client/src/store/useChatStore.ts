@@ -17,8 +17,8 @@ type ChatState = {
   messages: Message[];
   loading: boolean;
   isNewChat: boolean;
-
   sidebarOpen: boolean;
+
   setSidebarOpen: (open: boolean) => void;
   setChats: (chats: Chat[]) => void;
   setCurrentChat: (id: string | null) => void;
@@ -42,12 +42,13 @@ export const useChatStore = create<ChatState>()(
 
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
-      setChats: (chats) => set({ chats }),
+      setChats: (chats) => set({ chats}),
 
       setCurrentChat: (id) =>
         set((state) => ({
-          currentChatId: id,
+         currentChatId:id,
           isNewChat: id ? false : state.isNewChat,
+          
         })),
 
       setMessages: (messages) => set({ messages }),

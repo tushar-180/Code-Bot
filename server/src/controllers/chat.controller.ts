@@ -5,7 +5,11 @@ import {
   generateResponse,
 } from "../services/gemini.service";
 
-const handleChatError = (error: unknown, res: Response, fallbackMessage: string) => {
+const handleChatError = (
+  error: unknown,
+  res: Response,
+  fallbackMessage: string,
+) => {
   console.error(fallbackMessage, error);
 
   if (error instanceof GeminiServiceError) {
@@ -25,7 +29,6 @@ export const createChat = async (req: Request, res: Response) => {
       userId?: string;
       message?: string;
     };
-
 
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
@@ -97,10 +100,9 @@ export const getAllChats = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
-    
+
     const chats = await Chat.find({ userId }).sort({ updatedAt: -1 });
-    
-   
+
     return res.json(chats);
   } catch (error) {
     console.error("Error fetching chats", error);

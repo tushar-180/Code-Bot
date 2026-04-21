@@ -7,7 +7,10 @@ import ProtectedRoute from "./components/custom/ProtectedRoute";
 function App() {
   const { isSignedIn, isLoaded } = useUser();
 
-  if (!isLoaded) return <div className="min-h-screen bg-slate-950 text-slate-100">Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100">Loading...</div>
+    );
 
   return (
     <BrowserRouter>

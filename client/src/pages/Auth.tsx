@@ -8,9 +8,12 @@ const Auth = () => {
           <p className="text-sm uppercase tracking-[0.28em] text-slate-500">
             Secure access
           </p>
-          <h1 className="text-3xl font-semibold text-white">Sign in to continue</h1>
+          <h1 className="text-3xl font-semibold text-white">
+            Sign in to continue
+          </h1>
           <p className="text-sm text-slate-400">
-            Use your account to access the chat assistant and keep your conversations private.
+            Use your account to access the chat assistant and keep your
+            conversations private.
           </p>
         </div>
         <SignIn />
