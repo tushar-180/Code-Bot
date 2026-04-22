@@ -1,5 +1,7 @@
+import { memo } from "react";
 import { UserButton, useUser } from "@clerk/react";
 import { Sparkles, Menu } from "lucide-react";
+import { ModeToggle } from "./ModeToggle";
 
 interface ChatHeaderProps {
   currentChatId: string | null;
@@ -26,17 +28,22 @@ const ChatHeader = ({ currentChatId, onMenuClick }: ChatHeaderProps) => {
           </div>
           <div className="flex items-center justify-between w-full">
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-white">
-                {user?.firstName ? `Hello, ${user.firstName}` : "Welcome"}
+              <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                Code-Bot
+                <span className="text-indigo-400 text-sm font-medium border-l border-slate-700 pl-2 ml-1">
+                  {user?.firstName || user?.username || "Guest"}
+                </span>
               </h1>
               <p className="text-xs font-medium text-slate-400">
+                {user?.firstName ? `Hello, ${user.firstName}` : "Welcome"} •{" "}
                 {currentChatId
                   ? "Continuing Conversation"
                   : "Start a New Session"}
               </p>
             </div>
 
-            <div className="">
+            <div className="flex items-center gap-3">
+              <ModeToggle />
               <UserButton />
             </div>
           </div>
@@ -46,4 +53,4 @@ const ChatHeader = ({ currentChatId, onMenuClick }: ChatHeaderProps) => {
   );
 };
 
-export default ChatHeader;
+export default memo(ChatHeader);

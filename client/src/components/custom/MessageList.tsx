@@ -1,6 +1,5 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import { Bot } from "lucide-react";
-import { Loader2 } from "lucide-react";
 import MessageItem from "./MessageItem";
 
 interface Message {
@@ -53,7 +52,9 @@ const MessageList = ({
             <p>No messages yet. The stage is yours.</p>
           </div>
         ) : (
-          messages.map((msg, i) => <MessageItem key={i} message={msg} index={i} />)
+          messages.map((msg, i) => (
+            <MessageItem key={i} message={msg} index={i} />
+          ))
         )}
 
         {/* AI Typing Indicator */}
@@ -77,4 +78,4 @@ const MessageList = ({
   );
 };
 
-export default MessageList;
+export default memo(MessageList);

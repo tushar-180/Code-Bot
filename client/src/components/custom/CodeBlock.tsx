@@ -11,7 +11,7 @@ interface CodeBlockProps {
 
 const CodeBlock = ({ code, language }: CodeBlockProps) => {
   const [copied, setCopied] = useState(false);
-  const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+  // const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code);

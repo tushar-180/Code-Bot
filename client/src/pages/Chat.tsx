@@ -85,6 +85,7 @@ const Chat = () => {
       if (!currentChatId) {
         const res = await api.post("/chat", {
           userId: user.id,
+          // userId: "user_3CTI11k1ZizdmtPIzO1zJR6eYYw",
           message: trimmedInput,
         });
 
@@ -123,7 +124,6 @@ const Chat = () => {
           currentChatId={currentChatId}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        
 
         <MessageList
           messages={messages}

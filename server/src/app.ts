@@ -15,5 +15,4 @@ app.get("/", (req, res) => {
 
 app.use("/api/chat", chatRoutes);
 
-
 export default app;

@@ -68,12 +68,7 @@ const MessageItem = ({ message: msg, index }: MessageItemProps) => {
                   // If language exists → it's a code block
                   if (match) {
                     const codeString = String(children).replace(/\n$/, "");
-                    return (
-                      <CodeBlock
-                        code={codeString}
-                        language={match[1]}
-                      />
-                    );
+                    return <CodeBlock code={codeString} language={match[1]} />;
                   }
 
                   // Otherwise → inline code

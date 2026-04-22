@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import { useChatStore } from "@/store/useChatStore";
 import { api } from "@/lib/api";
 import { useUser } from "@clerk/react";
@@ -104,7 +104,7 @@ const Sidebar = () => {
             </div>
             <div>
               <h2 className="text-lg font-bold tracking-tight text-white leading-none">
-                Chat Studio
+                Code-Bot
               </h2>
               <p className="mt-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-slate-500">
                 v1.0 Professional
@@ -129,7 +129,7 @@ const Sidebar = () => {
           <span>New Chat</span>
         </button>
 
-        <div className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-none pr-1">
+        <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-1">
           <div className="flex items-center gap-2 px-2 pb-2">
             <LayoutDashboard size={14} className="text-slate-500" />
             <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
@@ -188,7 +188,7 @@ const Sidebar = () => {
 
         <div className="mt-auto border-t border-slate-800 pt-6 px-2 text-[10px] font-medium text-slate-600">
           <div className="flex items-center justify-between">
-            <span>&copy; 2026 Chat Studio</span>
+            <span>&copy; 2026 Code-Bot • Tushar</span>
             <div className="flex items-center gap-1.5">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               <span className="text-slate-500">AI Online</span>
@@ -200,4 +200,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

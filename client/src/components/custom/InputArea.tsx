@@ -1,10 +1,16 @@
-import { FormEvent } from "react";
+import {
+  type SyntheticEvent,
+  type KeyboardEvent,
+  useRef,
+  useEffect,
+  memo,
+} from "react";
 import { Send, Loader2 } from "lucide-react";
 
 interface InputAreaProps {
   input: string;
   onInputChange: (value: string) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (e: SyntheticEvent<HTMLFormElement>) => void;
   loading: boolean;
   currentChatId: string | null;
 }
@@ -16,13 +22,22 @@ const InputArea = ({
   loading,
   currentChatId,
 }: InputAreaProps) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+    }
+  }, [input]);
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (input.trim() && !loading) {
         const event = {
           preventDefault: () => {},
-        } as FormEvent<HTMLFormElement>;
+        } as SyntheticEvent<HTMLFormElement>;
         onSubmit(event);
       }
     }
@@ -33,15 +48,13 @@ const InputArea = ({
       <form onSubmit={onSubmit} className="mx-auto max-w-4xl">
         <div className="relative flex items-end gap-3 rounded-[1.75rem] border border-slate-700 bg-slate-900/80 p-2 shadow-2xl transition-all focus-within:border-indigo-500/50 focus-within:ring-4 focus-within:ring-indigo-500/10">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => onInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            placeholder={
-              currentChatId ? "Message Assistant..." : "New Chat..."
-            }
-            className="max-h-[200px] min-h-[48px] flex-1 resize-none bg-transparent px-4 py-3 text-[0.9375rem] text-slate-100 placeholder-slate-500 outline-none"
-            style={{ height: "auto" }}
+            placeholder={currentChatId ? "Message Assistant..." : "New Chat..."}
+            className="max-h-[200px] min-h-[48px] flex-1 resize-none bg-transparent px-4 py-3 text-[0.9375rem] text-slate-100 placeholder-slate-500 outline-none overflow-y-auto"
           />
 
           <button
@@ -57,12 +70,12 @@ const InputArea = ({
           </button>
         </div>
         <p className="mt-2 text-center text-[10px] text-slate-500">
-          AI model may produce inaccurate info. Personalize your workflow
-          with Chat Studio.
+          AI model may produce inaccurate info. Personalize your workflow with
+          Code-Bot.
         </p>
       </form>
     </div>
   );
 };
 
-export default InputArea;
+export default memo(InputArea);
