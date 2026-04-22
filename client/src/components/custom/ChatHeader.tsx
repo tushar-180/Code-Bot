@@ -1,7 +1,6 @@
 import { memo } from "react";
 import { UserButton, useUser } from "@clerk/react";
 import { Sparkles, Menu } from "lucide-react";
-import { ModeToggle } from "./ModeToggle";
 
 interface ChatHeaderProps {
   currentChatId: string | null;
@@ -43,7 +42,6 @@ const ChatHeader = ({ currentChatId, onMenuClick }: ChatHeaderProps) => {
             </div>
 
             <div className="flex items-center gap-3">
-              <ModeToggle />
               <UserButton />
             </div>
           </div>

@@ -3,8 +3,6 @@ import Chat from "./pages/Chat";
 import Auth from "./pages/Auth";
 import { useUser } from "@clerk/react";
 import ProtectedRoute from "./components/custom/ProtectedRoute";
-import { ThemeProvider } from "./components/theme-provider";
-
 function App() {
   const { isSignedIn, isLoaded } = useUser();
 
@@ -14,7 +12,6 @@ function App() {
     );
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <BrowserRouter>
         <div className="min-h-screen transition-colors duration-300">
           <Routes>
@@ -36,7 +33,6 @@ function App() {
           </Routes>
         </div>
       </BrowserRouter>
-    </ThemeProvider>
   );
 }
 

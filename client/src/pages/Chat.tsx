@@ -130,6 +130,7 @@ const Chat = () => {
           loading={loading}
           currentChatId={currentChatId}
           isNewChat={isNewChat}
+          onSuggestionClick={setInput}
         />
 
         <InputArea
