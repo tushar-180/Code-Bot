@@ -1,7 +1,7 @@
-
 import { useUser } from "@clerk/react";
 import { User, Bot } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   assistantMarkdownComponents,
   userMarkdownComponents,
@@ -31,11 +31,7 @@ const MessageAvatar = ({
   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl overflow-hidden border border-slate-700 shadow-sm">
     {isUser ? (
       imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="User"
-          className="h-full w-full object-cover"
-        />
+        <img src={imageUrl} alt="User" className="h-full w-full object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-slate-800 text-slate-400">
           <User size={18} />
@@ -96,26 +92,28 @@ const MessageItem = ({ message: msg, isStreaming }: MessageItemProps) => {
       } ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`flex w-full gap-4 ${
+        className={`flex w-full gap-2.5 md:gap-4 ${
           isUser
-            ? "max-w-3xl flex-row-reverse"
-            : "max-w-5xl flex-row items-start"
+            ? "max-w-full md:max-w-3xl flex-row-reverse"
+            : "max-w-full md:max-w-5xl flex-row items-start"
         }`}
       >
-        <MessageAvatar isUser={isUser} imageUrl={user?.imageUrl} />
+        <div className="hidden xs:block">
+          <MessageAvatar isUser={isUser} imageUrl={user?.imageUrl} />
+        </div>
 
         <div
-          className={`flex flex-col gap-2 ${
-            isUser ? "items-end" : "min-w-0 flex-1"
+          className={`flex flex-col gap-1.5 md:gap-2 ${
+            isUser ? "items-end flex-1" : "min-w-0 flex-1"
           }`}
         >
           <div
             className={`transition-all duration-300 ${
               isUser
-                ? "max-w-[85%] rounded-[1.6rem] rounded-br-md bg-linear-to-br from-indigo-500 to-indigo-600 px-5 py-3.5 text-[0.95rem] leading-7 text-white shadow-[0_18px_40px_rgba(79,70,229,0.25)] ring-1 ring-indigo-400/30"
-                : `w-full rounded-[1.8rem] border border-slate-800/80 bg-slate-900/55 px-6 py-5 text-slate-100 shadow-[0_28px_60px_rgba(15,23,42,0.24)] backdrop-blur-xl ${
+                ? "max-w-[92%] md:max-w-[85%] rounded-[1.4rem] md:rounded-[1.6rem] rounded-br-md bg-linear-to-br from-indigo-500 to-indigo-600 px-4 md:px-5 py-2.5 md:py-3.5 text-[0.9rem] md:text-[0.95rem] leading-6 md:leading-7 text-white shadow-[0_12px_30px_rgba(79,70,229,0.2)] ring-1 ring-indigo-400/30"
+                : `w-full rounded-3xl md:rounded-[1.8rem] border border-slate-800/80 bg-slate-900/55 px-4 md:px-6 py-3.5 md:py-5 text-[0.9rem] md:text-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.24)] backdrop-blur-xl ${
                     isStreaming
-                      ? "ring-1 ring-indigo-500/30 shadow-[0_0_30px_rgba(79,70,229,0.1)] streaming-message"
+                      ? "ring-1 ring-indigo-500/30 shadow-[0_0_25px_rgba(79,70,229,0.1)] streaming-message"
                       : ""
                   }`
             }`}
@@ -124,6 +122,7 @@ const MessageItem = ({ message: msg, isStreaming }: MessageItemProps) => {
               <p>&nbsp;</p>
             ) : (
               <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
                 components={
                   isUser ? userMarkdownComponents : assistantMarkdownComponents
                 }

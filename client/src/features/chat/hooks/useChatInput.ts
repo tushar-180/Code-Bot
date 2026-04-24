@@ -9,7 +9,7 @@ interface UseChatInputProps {
 export const useChatInput = ({ onSubmit, initialProvider }: UseChatInputProps) => {
   const [input, setInput] = useState("");
   const [selectedProvider, setSelectedProvider] = useState(
-    initialProvider || "gemini:gemini-3.1-flash-lite-preview"
+    initialProvider || "nvidia:openai/gpt-oss-120b"
   );
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {

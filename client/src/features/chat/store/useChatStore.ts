@@ -101,6 +101,12 @@ export const useChatStore = create<ChatState>()(
     }),
     {
       name: "chat-storage",
+      partialize: (state) =>
+        Object.fromEntries(
+          Object.entries(state).filter(
+            ([key]) => !["loading", "isStreaming"].includes(key),
+          ),
+        ) as ChatState,
     },
   ),
 );

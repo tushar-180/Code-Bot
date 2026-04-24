@@ -153,16 +153,16 @@ const InputArea = ({
   };
 
   return (
-    <div className="bg-linear-to-t from-slate-950 via-slate-950/90 to-transparent pb-8 pt-4 px-4 md:px-6 relative z-10">
+    <div className="bg-linear-to-t from-slate-950 via-slate-950/90 to-transparent pb-4 md:pb-8 pt-2 md:pt-4 px-3 md:px-6 relative z-10">
       <form onSubmit={onSubmit} className="mx-auto max-w-4xl relative">
-        <div className="group relative flex flex-col gap-0 rounded-4xl border border-slate-800/60 bg-slate-900/60 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl transition-all duration-300 focus-within:border-indigo-500/40 focus-within:bg-slate-900/80 focus-within:shadow-[0_20px_50px_rgba(79,70,229,0.1)] focus-within:ring-1 focus-within:ring-indigo-500/20">
+        <div className="group relative flex flex-col gap-0 rounded-4xl md:rounded-4xl border border-slate-800/60 bg-slate-900/60 p-1.5 md:p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl transition-all duration-300 focus-within:border-indigo-500/40 focus-within:bg-slate-900/80 focus-within:shadow-[0_20px_50px_rgba(79,70,229,0.1)] focus-within:ring-1 focus-within:ring-indigo-500/20">
           <ModelSelector
             availableProviders={availableProviders}
             selectedProvider={selectedProvider}
             onProviderChange={onProviderChange}
           />
 
-          <div className="flex items-end gap-2 pr-2">
+          <div className="flex items-end gap-1.5 md:gap-2 pr-1.5 md:pr-2">
             <textarea
               ref={textareaRef}
               value={input}
@@ -172,13 +172,13 @@ const InputArea = ({
               placeholder={
                 currentChatId ? "Ask anything..." : "Start a new journey..."
               }
-              className="max-h-[300px] min-h-[56px] flex-1 resize-none bg-transparent px-5 py-4 text-[1rem] text-slate-100 placeholder-slate-500/80 outline-none overflow-y-auto scrollbar-none selection:bg-indigo-500/30"
+              className="max-h-[200px] md:max-h-[300px] min-h-[48px] md:min-h-[56px] flex-1 resize-none bg-transparent px-4 md:px-5 py-3 md:py-4 text-[0.95rem] md:text-[1rem] text-slate-100 placeholder-slate-500/80 outline-none overflow-y-auto scrollbar-none selection:bg-indigo-500/30"
             />
 
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.25rem] mb-2 transition-all duration-300 ${
+              className={`flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-2xl md:rounded-[1.25rem] mb-1.5 md:mb-2 transition-all duration-300 ${
                 loading || !input.trim()
                   ? "bg-slate-800 text-slate-600 cursor-not-allowed"
                   : "bg-linear-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-900/20 hover:scale-105 active:scale-95 hover:shadow-indigo-500/30"

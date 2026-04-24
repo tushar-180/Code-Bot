@@ -9,36 +9,41 @@ export const useChatMessages = () => {
   const [loadedChatId, setLoadedChatId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentChatId) {
+    // 1. If no chat is selected, reset states and return
+    if (!currentChatId) {
+      setMessagesLoading(false);
+      setLoadedChatId(null);
       return;
     }
 
-    setMessagesLoading(false);
-    setLoadedChatId(null);
+    // 2. If we are currently streaming, reset loadedChatId to force refetch when stream ends
+    if (isStreaming) {
+      setLoadedChatId(null);
+      return;
+    }
 
-    // If it's a new chat, we don't need to fetch anything, but we might want to clear local messages
-    // The store might handle this, but keeping consistency with original logic
-  }, [currentChatId]);
-
-  useEffect(() => {
-    if (!currentChatId || isStreaming) {
+    // 3. If the chat is already loaded, don't fetch
+    if (loadedChatId === currentChatId) {
+      setMessagesLoading(false);
       return;
     }
 
     let cancelled = false;
 
     const loadMessages = async () => {
+      console.log(`[useChatMessages] Triggering fetch for chat: ${currentChatId}`);
       setMessagesLoading(true);
-      setLoadedChatId(null);
-
+      
       try {
         const messages = await chatService.fetchMessages(currentChatId);
+        
         if (!cancelled) {
           setMessages(messages);
           setLoadedChatId(currentChatId);
+          console.log(`[useChatMessages] Successfully loaded ${messages.length} messages`);
         }
       } catch (err) {
-        console.error("Error fetching messages", err);
+        console.error("[useChatMessages] Error fetching messages", err);
         if (!cancelled) {
           toast.error("Could not load messages for this chat.");
         }
@@ -54,7 +59,7 @@ export const useChatMessages = () => {
     return () => {
       cancelled = true;
     };
-  }, [currentChatId, isStreaming, setMessages]);
+  }, [currentChatId, isStreaming, loadedChatId, setMessages]);
 
   return {
     messagesLoading,

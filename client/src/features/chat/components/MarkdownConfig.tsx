@@ -59,6 +59,32 @@ export const assistantMarkdownComponents = {
   strong: (props: React.ComponentPropsWithoutRef<"strong">) => (
     <strong className="font-semibold text-white" {...props} />
   ),
+  table: (props: React.ComponentPropsWithoutRef<"table">) => (
+    <div className="my-6 w-full overflow-x-auto rounded-xl border border-slate-800/80 bg-slate-900/30">
+      <table className="w-full border-collapse text-left text-sm" {...props} />
+    </div>
+  ),
+  thead: (props: React.ComponentPropsWithoutRef<"thead">) => (
+    <thead className="border-b border-slate-800 bg-slate-800/50" {...props} />
+  ),
+  tbody: (props: React.ComponentPropsWithoutRef<"tbody">) => (
+    <tbody className="divide-y divide-slate-800/50" {...props} />
+  ),
+  tr: (props: React.ComponentPropsWithoutRef<"tr">) => (
+    <tr className="transition-colors hover:bg-slate-800/30" {...props} />
+  ),
+  th: (props: React.ComponentPropsWithoutRef<"th">) => (
+    <th
+      className="px-4 py-3 font-semibold text-slate-200 first:pl-6 last:pr-6"
+      {...props}
+    />
+  ),
+  td: (props: React.ComponentPropsWithoutRef<"td">) => (
+    <td
+      className="px-4 py-3 text-slate-300 first:pl-6 last:pr-6"
+      {...props}
+    />
+  ),
   code: (props: React.ComponentPropsWithoutRef<"code">) => {
     const { children, className } = props;
     const match = /language-(\w+)/.exec(className || "");
@@ -74,6 +100,16 @@ export const assistantMarkdownComponents = {
       </code>
     );
   },
+  img: (props: React.ComponentPropsWithoutRef<"img">) => (
+    <div className="my-6 overflow-hidden rounded-2xl border border-slate-800/60 shadow-xl">
+      <img className="h-auto max-w-full" {...props} loading="lazy" />
+      {props.alt && (
+        <span className="block border-t border-slate-800/60 bg-slate-900/50 px-4 py-2 text-center text-[11px] font-medium text-slate-500 italic">
+          {props.alt}
+        </span>
+      )}
+    </div>
+  ),
 };
 
 export const userMarkdownComponents = {

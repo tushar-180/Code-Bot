@@ -17,6 +17,7 @@ export const chatService = {
    * Fetches all chats for a given user.
    */
   async fetchChats(userId: string): Promise<Chat[]> {
+   
     const res = await api.get("/chat", {
       params: { userId },
     });
@@ -27,6 +28,7 @@ export const chatService = {
    * Fetches messages for a specific chat.
    */
   async fetchMessages(chatId: string): Promise<Message[]> {
+    console.log("i am fetching")
     const res = await api.get(`/chat/${chatId}`);
     return res.data.messages || [];
   },
@@ -43,6 +45,7 @@ export const chatService = {
    * Parses a raw SSE event string.
    */
   parseStreamEvent(rawEvent: string) {
+ 
     const event = rawEvent.trim();
     if (!event.startsWith("data: ")) return null;
 

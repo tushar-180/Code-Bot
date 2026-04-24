@@ -72,6 +72,7 @@ const MessageList = ({
     // Use instant scroll during streaming to prevent jitter/shaking
     scrollToBottom(isStreaming);
   }, [messages, isStreaming]);
+  
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-8 md:px-6 [overflow-anchor:none]">

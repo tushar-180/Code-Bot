@@ -44,13 +44,14 @@ export const useChatList = () => {
   const selectChat = (chatId: string) => {
     setIsNewChat(false);
     setCurrentChat(chatId);
+    setMessages([]); // Clear messages immediately for smoother transition
     setSidebarOpen(false);
   };
 
   useEffect(() => {
     if (!user?.id || loading || isStreaming) return;
-
     const fetchChats = async () => {
+      console.log("fetch")
       try {
         const res = await api.get("/chat", {
           params: { userId: user.id },

@@ -31,10 +31,10 @@ const Sidebar = () => {
 
       <aside
         className={`
-        fixed inset-y-0 left-0 z-50 flex h-full w-full flex-col gap-6 border-slate-800/60 bg-slate-950 p-6 transition-transform duration-300 ease-in-out md:relative md:w-80 md:translate-x-0 md:border-r md:max-h-screen md:overflow-y-auto
+        fixed inset-y-0 left-0 z-50 flex h-full w-[280px] flex-col gap-6 border-slate-800/60 bg-slate-950 p-5 transition-transform duration-300 ease-in-out md:relative md:w-80 md:translate-x-0 md:border-r md:max-h-screen md:overflow-y-auto
         ${
           sidebarOpen
-            ? "translate-x-0 transform"
+            ? "translate-x-0"
             : "-translate-x-full md:translate-x-0"
         }
       `}
@@ -91,7 +91,7 @@ const Sidebar = () => {
               {chats.map((chat) => (
                 <button
                   key={chat._id}
-                  onClick={() => selectChat(chat._id)}
+                  onClick={() => { selectChat(chat._id); console.log("i clicked")}}
                   className={`group flex items-center justify-between gap-3 rounded-2xl px-4 py-3.5 text-sm transition-all ${
                     currentChatId === chat._id
                       ? "bg-slate-900 text-white shadow-lg ring-1 ring-slate-800"
