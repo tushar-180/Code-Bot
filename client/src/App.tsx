@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Auth from "./pages/Auth";
 import { useUser } from "@clerk/react";
-import ProtectedRoute from "./components/custom/ProtectedRoute";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 function App() {
   const { isSignedIn, isLoaded } = useUser();
 

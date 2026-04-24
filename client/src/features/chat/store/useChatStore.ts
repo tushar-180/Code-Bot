@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 type Message = {
   role: "user" | "assistant";
   content: string;
+  model?: string;
 };
 
 type Chat = {
@@ -16,6 +17,7 @@ type ChatState = {
   currentChatId: string | null;
   messages: Message[];
   loading: boolean;
+  isStreaming: boolean;
   isNewChat: boolean;
   sidebarOpen: boolean;
 
@@ -24,7 +26,9 @@ type ChatState = {
   setCurrentChat: (id: string | null) => void;
   setMessages: (messages: Message[]) => void;
   addMessage: (message: Message) => void;
+  updateLastMessage: (content: string, model?: string) => void;
   setLoading: (loading: boolean) => void;
+  setIsStreaming: (isStreaming: boolean) => void;
   setIsNewChat: (isNew: boolean) => void;
   removeChat: (id: string) => void;
   clearMessages: () => void;
@@ -37,6 +41,7 @@ export const useChatStore = create<ChatState>()(
       currentChatId: null,
       messages: [],
       loading: false,
+      isStreaming: false,
       isNewChat: false,
       sidebarOpen: false,
 
@@ -57,7 +62,30 @@ export const useChatStore = create<ChatState>()(
           messages: [...state.messages, message],
         })),
 
+      updateLastMessage: (content, model) =>
+        set((state) => {
+          const newMessages = [...state.messages];
+          const lastMessage = newMessages[newMessages.length - 1];
+
+          if (lastMessage?.role === "assistant") {
+            newMessages[newMessages.length - 1] = {
+              ...lastMessage,
+              content,
+            };
+          } else {
+            newMessages.push({
+              role: "assistant",
+              content,
+              model,
+            });
+          }
+
+          return { messages: newMessages };
+        }),
+
       setLoading: (loading) => set({ loading }),
+
+      setIsStreaming: (isStreaming) => set({ isStreaming }),
 
       setIsNewChat: (isNew) => set({ isNewChat: isNew }),
 

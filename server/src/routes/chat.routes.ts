@@ -5,9 +5,11 @@ const router = Router();
 
 // Create new chat
 router.post("/", ChatController.createChat);
+router.post("/stream", ChatController.createChatStream);
 
 // Add message to existing chat
 router.post("/:id", ChatController.sendMessage);
+router.post("/:id/stream", ChatController.streamMessage);
 
 // Get All Chats
 router.get("/", ChatController.getAllChats);

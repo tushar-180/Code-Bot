@@ -1,8 +1,6 @@
-import { useEffect, memo } from "react";
-import { useChatStore } from "@/store/useChatStore";
-import { api } from "@/lib/api";
-import { useUser } from "@clerk/react";
-import { toast } from "sonner";
+import { memo } from "react";
+import { useChatStore } from "@/features/chat/store/useChatStore";
+import { useChatList } from "@/features/chat/hooks/useChatList";
 import {
   Plus,
   MessageSquare,
@@ -12,74 +10,14 @@ import {
   Trash2,
 } from "lucide-react";
 
+/**
+ * Sidebar Component
+ * Manages the list of chat threads and navigation.
+ */
 const Sidebar = () => {
-  const {
-    chats,
-    currentChatId,
-    isNewChat,
-    setChats,
-    setCurrentChat,
-    setMessages,
-    setIsNewChat,
-    sidebarOpen,
-    setSidebarOpen,
-    removeChat,
-  } = useChatStore();
-
-  const { user } = useUser();
-
-  const createChat = () => {
-    setIsNewChat(true);
-    setCurrentChat(null);
-    setMessages([]);
-    setSidebarOpen(false); // Close sidebar on mobile after starting new chat
-  };
-
-  const handleDeleteChat = async (e: React.MouseEvent, chatId: string) => {
-    e.stopPropagation(); // Prevent chat selection
-
-    if (!window.confirm("Are you sure you want to delete this chat?")) return;
-
-    try {
-      await api.delete(`/chat/${chatId}`);
-      removeChat(chatId);
-      toast.success("Chat deleted successfully.");
-    } catch (err) {
-      console.error("Error deleting chat", err);
-      toast.error("Could not delete chat.");
-    }
-  };
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const fetchChats = async () => {
-      try {
-        const res = await api.get("/chat", {
-          params: { userId: user.id },
-        });
-
-        const fetchedChats = res.data || [];
-
-        setChats(fetchedChats);
-
-        if (fetchedChats.length === 0) {
-          setCurrentChat(null);
-          setMessages([]);
-          return;
-        }
-
-        if (!currentChatId && !isNewChat) {
-          setCurrentChat(fetchedChats[0]._id);
-        }
-      } catch (err) {
-        console.error("Error fetching chats", err);
-        toast.error("Could not load chats.");
-      }
-    };
-
-    fetchChats();
-  }, [user?.id, isNewChat, setChats, setCurrentChat, setMessages]);
+  const { sidebarOpen, setSidebarOpen } = useChatStore();
+  const { chats, currentChatId, createChat, deleteChat, selectChat } =
+    useChatList();
 
   return (
     <>
@@ -94,7 +32,11 @@ const Sidebar = () => {
       <aside
         className={`
         fixed inset-y-0 left-0 z-50 flex h-full w-full flex-col gap-6 border-slate-800/60 bg-slate-950 p-6 transition-transform duration-300 ease-in-out md:relative md:w-80 md:translate-x-0 md:border-r md:max-h-screen md:overflow-y-auto
-        ${sidebarOpen ? "translate-x-0 transform" : "-translate-x-full md:translate-x-0"}
+        ${
+          sidebarOpen
+            ? "translate-x-0 transform"
+            : "-translate-x-full md:translate-x-0"
+        }
       `}
       >
         <div className="flex items-center justify-between px-2">
@@ -149,11 +91,7 @@ const Sidebar = () => {
               {chats.map((chat) => (
                 <button
                   key={chat._id}
-                  onClick={() => {
-                    setIsNewChat(false);
-                    setCurrentChat(chat._id);
-                    setSidebarOpen(false); // Close sidebar on mobile after selecting chat
-                  }}
+                  onClick={() => selectChat(chat._id)}
                   className={`group flex items-center justify-between gap-3 rounded-2xl px-4 py-3.5 text-sm transition-all ${
                     currentChatId === chat._id
                       ? "bg-slate-900 text-white shadow-lg ring-1 ring-slate-800"
@@ -175,7 +113,10 @@ const Sidebar = () => {
 
                   {/* Delete Button - Hidden by default, visible on hover */}
                   <div
-                    onClick={(e) => handleDeleteChat(e, chat._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteChat(chat._id);
+                    }}
                     className="opacity-0 group-hover:opacity-100 flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-800 hover:text-red-400 transition-all"
                   >
                     <Trash2 size={14} />

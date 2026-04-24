@@ -1,119 +1,39 @@
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { useUser } from "@clerk/react";
-import axios from "axios";
-import { useChatStore } from "@/store/useChatStore";
-import { api } from "@/lib/api";
-import Sidebar from "@/components/custom/Sidebar";
-import ChatHeader from "@/components/custom/ChatHeader";
-import MessageList from "@/components/custom/MessageList";
-import InputArea from "@/components/custom/InputArea";
-import { toast } from "sonner";
+import { useChatStore } from "@/features/chat/store/useChatStore";
+import Sidebar from "@/features/chat/components/Sidebar";
+import ChatHeader from "@/features/chat/components/ChatHeader";
+import MessageList from "@/features/chat/components/MessageList";
+import InputArea from "@/features/chat/components/InputArea";
+import { useChatMessages } from "@/features/chat/hooks/useChatMessages";
+import { useChatStream } from "@/features/chat/hooks/useChatStream";
+import { useChatInput } from "@/features/chat/hooks/useChatInput";
 
-const getChatErrorMessage = (error: unknown) => {
-  if (axios.isAxiosError(error)) {
-    const apiMessage =
-      typeof error.response?.data?.error === "string"
-        ? error.response.data.error
-        : undefined;
-    const retryAfter = error.response?.data?.retryAfter;
-
-    if (apiMessage && retryAfter) {
-      return `${apiMessage} Try again in about ${retryAfter} seconds.`;
-    }
-
-    return apiMessage || error.message;
-  }
-
-  return "Something went wrong while sending your message.";
-};
-
+/**
+ * Chat Page Component
+ * Handles the main layout and orchestrates chat logic via custom hooks.
+ */
 const Chat = () => {
-  const { user } = useUser();
+  const { currentChatId, messages, loading, isNewChat, setSidebarOpen } =
+    useChatStore();
+
+  // 1. Manage Message Fetching & Sync
+  const { messagesLoading, loadedChatId } = useChatMessages();
+
+  // 2. Manage Streaming Logic & Optimistic UI
+  const { streamMessage, optimisticMessages, isStreaming } = useChatStream();
+
+  // 3. Manage Input & Form Submission
   const {
-    chats,
-    currentChatId,
-    messages,
-    loading,
-    isNewChat,
-    setChats,
-    setCurrentChat,
-    setMessages,
-    setIsNewChat,
-    addMessage,
-    setSidebarOpen,
-    setLoading,
-  } = useChatStore();
+    input,
+    setInput,
+    selectedProvider,
+    setSelectedProvider,
+    handleFormSubmit,
+  } = useChatInput({
+    onSubmit: streamMessage,
+  });
 
-  const [input, setInput] = useState("");
-
-  useEffect(() => {
-    if (!currentChatId) {
-      setMessages([]);
-      return;
-    }
-
-    const fetchMessages = async () => {
-      try {
-        const res = await api.get(`/chat/${currentChatId}`);
-        setMessages(res.data.messages || []);
-      } catch (err) {
-        console.error("Error fetching messages", err);
-        toast.error("Could not load messages for this chat.");
-      }
-    };
-
-    fetchMessages();
-  }, [currentChatId, setMessages]);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const trimmedInput = input.trim();
-
-    if (!trimmedInput || loading || !user?.id) {
-      return;
-    }
-
-    const userMessage = { role: "user" as const, content: trimmedInput };
-
-    addMessage(userMessage);
-    setInput("");
-    setLoading(true);
-
-    try {
-      if (!currentChatId) {
-        const res = await api.post("/chat", {
-          userId: user.id,
-          // userId: "user_3CTI11k1ZizdmtPIzO1zJR6eYYw",
-          message: trimmedInput,
-        });
-
-        setChats([res.data, ...chats]);
-        setCurrentChat(res.data._id);
-        setMessages(res.data.messages || []);
-        setIsNewChat(false);
-        return;
-      }
-
-      const res = await api.post(`/chat/${currentChatId}`, {
-        message: trimmedInput,
-      });
-
-      setMessages(res.data.messages || []);
-      setChats(
-        chats.map((chat) =>
-          chat._id === res.data._id ? { ...chat, title: res.data.title } : chat,
-        ),
-      );
-    } catch (err) {
-      console.error("Error sending message", err);
-      setMessages(messages);
-      toast.error(getChatErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Determine which messages to display (prefer optimistic during streaming)
+  const displayMessages = optimisticMessages ?? messages;
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950 text-slate-100">
@@ -126,8 +46,13 @@ const Chat = () => {
         />
 
         <MessageList
-          messages={messages}
+          messages={displayMessages}
           loading={loading}
+          messagesLoading={messagesLoading}
+          hasLoadedCurrentChat={
+            !currentChatId || loadedChatId === currentChatId
+          }
+          isStreaming={isStreaming}
           currentChatId={currentChatId}
           isNewChat={isNewChat}
           onSuggestionClick={setInput}
@@ -136,9 +61,11 @@ const Chat = () => {
         <InputArea
           input={input}
           onInputChange={setInput}
-          onSubmit={handleSubmit}
+          onSubmit={handleFormSubmit}
           loading={loading}
           currentChatId={currentChatId}
+          selectedProvider={selectedProvider}
+          onProviderChange={setSelectedProvider}
         />
       </main>
     </div>

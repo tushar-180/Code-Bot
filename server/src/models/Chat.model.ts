@@ -10,6 +10,9 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  model: {
+    type: String,
+  },
 });
 
 const chatSchema = new mongoose.Schema(
@@ -31,6 +34,7 @@ const chatSchema = new mongoose.Schema(
 export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
+  model?: string;
 };
 
 export const Chat = mongoose.model("Chat", chatSchema);
