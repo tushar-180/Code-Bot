@@ -7,7 +7,9 @@ import { errorHandler } from "./middleware/error.middleware";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173","https://code-bot-1-z2qi.onrender.com"]
+}));
 app.use(express.json());
 app.use(morgan("dev"));
 
